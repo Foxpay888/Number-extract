@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bank Extractor</title>
+</head>
+<body>
+
+<h2>Upload PDF</h2>
+<input type="file" id="pdfFile" />
+<button onclick="uploadPDF()">Extract</button>
+
+<h3>Result</h3>
+<textarea id="output" rows="15" cols="50"></textarea><br>
+<button onclick="downloadTXT()">Download TXT</button>
+
+<script>
+async function uploadPDF() {
+  const file = document.getElementById("pdfFile").files[0];
+  if (!file) return alert("Select PDF");
+
+  const formData = new FormData();
+  formData.append("pdf", file);
+
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  document.getElementById("output").value = data.data.join("\n");
+}
+
+function downloadTXT() {
+  const text = document.getElementById("output").value;
+  const blob = new Blob([text], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "data.txt";
+  a.click();
+}
+</script>
+
+</body>
+</html>
